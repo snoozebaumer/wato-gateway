@@ -1,0 +1,26 @@
+{
+  "name": "wato-gateway",
+  "version": "1.0.0",
+  "description": "Gateway for \"What are the Odds?\", managing microservice connections",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/snoozebaumer/wato-gateway.git"
+  },
+  "keywords": [
+    "wato"
+  ],
+  "author": "Samuel Nussbaumer",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/snoozebaumer/wato-gateway/issues"
+  },
+  "homepage": "https://github.com/snoozebaumer/wato-gateway#readme",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "express": "^4.18.2"
+  }
+}
