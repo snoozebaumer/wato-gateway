@@ -10,7 +10,7 @@ const {ChallengeStatus} = require('./models/challenge-status');
 const server = express();
 const port = 8080;
 
-server.use(cors({origin: true, credentials: true}));
+server.use(cors({origin: 'http://localhost:4200', credentials: true}));
 server.use(cookieParser());
 server.use(bodyParser.json());
 
@@ -33,7 +33,7 @@ server.post('/api/challenges', async (req, res) => {
         try {
             const response = await axios.post(process.env.USER_SERVICE_ADDR, {name});
             userId = response.data.id;
-            res.cookie('id', userId, {httpOnly: true, sameSite: 'none', secure: true});
+            res.cookie('id', userId, {httpOnly: false, sameSite: 'none', secure: true});
             console.log(`GATEWAY: Created user: ${name} with id: ${userId} from IP: ${req.ip}`);
         } catch (error) {
             console.error(`GATEWAY: failed to create user: ${name} from IP: ${req.ip} with error: ${error.message}`);
@@ -66,7 +66,7 @@ server.get('/api/challenges/:id', async (req, res) => {
         const response = await axios.get(process.env.GAME_SERVICE_ADDR + '/' + id);
 
         // "security": don't send numbers to client if game isn't finished so cheaters can't read from js
-        if (response.data.challengeStatus !== ChallengeStatus.SUCCESS ||
+        if (response.data.challengeStatus !== ChallengeStatus.SUCCESS &&
             response.data.challengeStatus !== ChallengeStatus.FAILURE) {
             delete response.data['challengerNumber'];
             delete response.data['challengeeNumber'];
@@ -118,7 +118,7 @@ server.put('/api/challenges/:id', async (req, res) => {
             try {
                 const response = await axios.post(process.env.USER_SERVICE_ADDR, {name});
                 challengeeId = response.data.id;
-                res.cookie('id', challengeeId, {httpOnly: true, sameSite: 'none', secure: true});
+                res.cookie('id', challengeeId, {httpOnly: false, sameSite: 'none', secure: true});
                 console.log(`GATEWAY: Created user: ${name} with id: ${challengeeId} from IP: ${req.ip}`);
             } catch (error) {
                 console.error(`GATEWAY: failed to create user: ${name} from IP: ${req.ip} with error: ${error.message}`);
@@ -133,11 +133,49 @@ server.put('/api/challenges/:id', async (req, res) => {
     try {
         const response = await axios.put(process.env.GAME_SERVICE_ADDR + '/' + id,
             {...(challengeeId ? {challengeeId} : {}), ...req.body});
+
+        try {
+            const challenger = await axios.get(process.env.USER_SERVICE_ADDR + '/' +
+                response.data.challengerId);
+            response.data.challengerName = challenger.data.name;
+        } catch (error) {
+            response.data.challengerName = "Unknown";
+        }
+
+
+        if (response.data.challengeeId) {
+            try {
+                const challengeeUserResponse = await axios.get(process.env.USER_SERVICE_ADDR + '/' +
+                    response.data.challengeeId);
+                response.data.challengeeName = challengeeUserResponse.data.name;
+            } catch {
+                response.data.challengeeName = 'Unknown';
+            }
+        }
+
+
         console.log(`GATEWAY: Edited challenge with id: ${id} for IP: ` + req.ip);
         res.send(response.data);
     } catch (error) {
         console.error(`GATEWAY: failed to edit challenge for IP: ${req.ip} with error: `, error.message);
         return res.status(500).send('Internal Server Error');
+    }
+});
+
+server.get('/api/user', async (req, res) => {
+    if (!req.cookies || !req.cookies.id) {
+        console.log(`GATEWAY: no cookie set for user for ip ${req.ip}.`)
+        return res.status(404).send("User not found");
+    }
+
+    const id = req.cookies.id
+    try {
+        const response = await axios.get(process.env.USER_SERVICE_ADDR + '/' + id);
+        console.log(`GATEWAY: fetched user ${id} for ip ${req.ip}.`);
+        res.send(response.data);
+    } catch (error) {
+        console.error(`GATEWAY: failed to fetch user for IP: ${req.ip} with error: `, error.message);
+        return res.status(500).send('Internal Server error');
     }
 });
 
