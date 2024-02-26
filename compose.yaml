@@ -1,0 +1,46 @@
+services:
+  game-server:
+    build:
+      context: ../wato-game
+    environment:
+      NODE_ENV: production
+    ports:
+      - 4566:4566
+    env_file:
+        - ../wato-game/.env
+    networks:
+      - wato-network
+
+  user-server:
+    build:
+      context: ../wato-user
+    environment:
+      NODE_ENV: production
+    ports:
+      - 4567:4567
+    env_file:
+      - ../wato-user/.env
+    networks:
+      - wato-network
+
+  gateway:
+    build:
+      context: .
+    environment:
+      NODE_ENV: production
+    ports:
+      - 8080:8080
+    env_file:
+      - ./docker.env
+    depends_on:
+      - game-server
+      - user-server
+    networks:
+      - wato-network
+
+networks:
+  wato-network:
+    driver: bridge
+
+
+

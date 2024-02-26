@@ -9,12 +9,19 @@ npm install
 2. Set up the corresponding microservices ([wato-game](https://github.com/snoozebaumer/wato-game), [wato-user](https://github.com/snoozebaumer/wato-user)) and run them.
 3. Copy the `.env.example` file and rename it to `.env`. Then fill in the required environment variables.
 
-## Run the project
+## Run the gateway server
 Run the following command to start the server:
 ```
 npm run start
 ```
 Now you can either use the frontend application ([wato-frontend](https://github.com/snoozebaumer/wato-game)) or curl / Postman to test the API.
+
+## Run the whole backend stack at once
+Run the following command to start the the whole backend application in docker (gateway, game, user):
+```
+docker compose up --build
+````
+this requires .env files to be present, as well as the microservices to be at ../wato-game and ../wato-user.
 
 ## API Documentation
 | # | Endpoint                                               | Method | Description                                                                                | Request Body                                                                                      | Response Body                                                                                                                                                                                                                                                                                                              |
