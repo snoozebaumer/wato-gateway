@@ -101,6 +101,9 @@ server.get('/api/challenges/:id', async (req, res) => {
     }
 });
 
+/*
+    NOTE: request not idempotent, which PUT should be. this should be changed to PATCH on refactor.
+ */
 server.put('/api/challenges/:id', async (req, res) => {
     const id = req.params.id;
     let challengeeId;
