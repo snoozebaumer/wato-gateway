@@ -17,7 +17,7 @@ npm run start
 Now you can either use the frontend application ([wato-frontend](https://github.com/snoozebaumer/wato-game)) or curl / Postman to test the API.
 
 ## Run the whole backend stack at once (compose for development)
-Run the following command to start the the whole backend application in docker (gateway, game, user):
+Run the following command to start the whole backend application in docker (gateway, game, user):
 ```
 docker compose up --build
 ````
