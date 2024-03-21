@@ -1,4 +1,8 @@
 # wato-gateway
+____
+> **:warning:
+Archiving in favor of a monorepo approach. See [wato](https://github.com/snoozebaumer/wato) for the new repository.**
+____
 Backend Gateway For ["What are the Odds"](https://github.com/snoozebaumer/wato).
 
 ## Project setup
